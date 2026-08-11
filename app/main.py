@@ -5,6 +5,7 @@ from app.api.routes.play import router as play_router
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.core.logging import setup_logging
+from app.monitoring.metrics import setup_metrics
 
 import app.models  # noqa: F401
 
@@ -18,6 +19,9 @@ async def lifespan(app: FastAPI):
 setup_logging()
 
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
+
+# Setup Prometheus metrics middleware and /metrics route
+setup_metrics(app)
 
 app.include_router(play_router)
 

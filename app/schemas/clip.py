@@ -12,3 +12,11 @@ class ClipResponse(BaseModel):
     play_count: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ClipStatsResponse(BaseModel):
+    id: int
+    title: str
+    play_count: int
+
+    model_config = ConfigDict(from_attributes=True)

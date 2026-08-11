@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import httpx
 
 from app.core.database import get_db
-from app.schemas.clip import ClipResponse
+from app.schemas.clip import ClipResponse, ClipStatsResponse
 from app.services import clip_service
 
 router = APIRouter(prefix="/play", tags=["play"])
@@ -39,3 +39,15 @@ async def stream_clip(clip_id: int, db: Session = Depends(get_db)):
                     yield chunk
 
     return StreamingResponse(iterfile(), media_type="audio/mpeg")
+
+
+@router.get("/{clip_id}/stats", response_model=ClipStatsResponse)
+def get_clip_stats(clip_id: int, db: Session = Depends(get_db)):
+    """Return play count and metadata for a given clip."""
+    clip = clip_service.get_clip_by_id(db, clip_id)
+    if not clip:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Clip not found",
+        )
+    return clip

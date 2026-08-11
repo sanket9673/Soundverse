@@ -46,28 +46,35 @@ graph TD;
     classDef api fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#38bdf8;
     classDef service fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#a7f3d0;
     classDef storage fill:#581c87,stroke:#a855f7,stroke-width:2px,color:#f3e8ff;
+    classDef external fill:#451a03,stroke:#f97316,stroke-width:2px,color:#ffedd5;
 
     Client["Client / Web App / Postman"]:::client
     Security["Security Middleware<br>(API Key & CORS Validation)"]:::security
-    Router["FastAPI Router<br>(/play routes)"]:::api
+    Router["FastAPI Router<br>(/play Routes)"]:::api
 
-    subgraph Execution ["Service Layer"]
-        ClipService["Clip Service<br>(Thread Offloaded DB Operations)"]:::service
-        StreamEngine["httpx Async Stream Engine<br>(Chunked MP3 Streaming)"]:::service
+    subgraph ServiceLayer ["Service Layer"]
+        ClipService["Clip Service<br>(Thread Offloaded DB Logic)"]:::service
         MetricsEngine["Prometheus Telemetry<br>(streams_by_clip_total)"]:::service
+        StreamEngine["httpx Async Stream Engine<br>(Chunked MP3 Streaming)"]:::service
     end
 
-    subgraph Storage ["Persistence Layer"]
+    subgraph PersistenceLayer ["Persistence Layer"]
         Postgres[("PostgreSQL Database<br>(Clip Metadata & play_count)")]:::storage
-        RemoteAudio[("Public Domain Audio Host<br>(SoundHelix MP3 Storage)")]:::storage
     end
 
+    subgraph ExternalInfra ["External Infrastructure"]
+        RemoteAudio[("Public Domain Audio CDN<br>(SoundHelix Remote MP3 Host)")]:::external
+    end
+
+    %% Execution Flow
     Client --> Security
     Security --> Router
+    
     Router --> ClipService
-
     ClipService --> Postgres
+    
     Router --> MetricsEngine
+    
     Router --> StreamEngine
     StreamEngine --> RemoteAudio
 ```

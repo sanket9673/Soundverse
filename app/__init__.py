@@ -1,0 +1,1 @@
+# Soundverse Play Service package root

@@ -1,3 +1,3 @@
-from app.schemas.clip import ClipResponse, ClipStatsResponse
+from app.schemas.clip import ClipCreate, ClipResponse, ClipStatsResponse
 
-__all__ = ["ClipResponse", "ClipStatsResponse"]
+__all__ = ["ClipCreate", "ClipResponse", "ClipStatsResponse"]

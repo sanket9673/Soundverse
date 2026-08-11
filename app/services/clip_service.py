@@ -1,6 +1,8 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
+
 from app.models.clip import Clip
+from app.schemas.clip import ClipCreate
 
 
 def get_all_clips(db: Session) -> List[Clip]:
@@ -16,6 +18,15 @@ def get_clip_by_id(db: Session, clip_id: int) -> Optional[Clip]:
 def increment_play_count(db: Session, clip: Clip) -> Clip:
     """Increment the play_count for a clip and commit to the database."""
     clip.play_count += 1
+    db.commit()
+    db.refresh(clip)
+    return clip
+
+
+def create_clip(db: Session, clip_data: ClipCreate) -> Clip:
+    """Create a new audio clip record in the database."""
+    clip = Clip(**clip_data.model_dump())
+    db.add(clip)
     db.commit()
     db.refresh(clip)
     return clip

@@ -41,3 +41,36 @@ def test_stream_clip_not_found(client: TestClient):
     error_data = response.json()
     assert error_data["error"] == "Clip not found"
     assert error_data["code"] == 404
+
+
+def test_create_clip_success(client: TestClient):
+    payload = {
+        "title": "Lo-Fi Chill",
+        "description": "Relaxing lo-fi track",
+        "genre": "Lo-Fi",
+        "duration": 120.5,
+        "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+    }
+    response = client.post("/play", json=payload)
+    assert response.status_code == 201
+    data = response.json()
+    assert data["title"] == payload["title"]
+    assert data["description"] == payload["description"]
+    assert data["genre"] == payload["genre"]
+    assert data["duration"] == payload["duration"]
+    assert data["audio_url"] == payload["audio_url"]
+    assert data["play_count"] == 0
+    assert "id" in data
+
+
+def test_create_clip_validation_error(client: TestClient):
+    payload = {
+        "title": "Invalid Clip",
+        "genre": "Ambient",
+        "duration": -5.0,  # invalid duration <= 0
+        "audio_url": "https://example.com/audio.mp3",
+    }
+    response = client.post("/play", json=payload)
+    assert response.status_code == 422
+    data = response.json()
+    assert data["code"] == 422

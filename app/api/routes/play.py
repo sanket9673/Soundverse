@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 import httpx
 
 from app.core.database import get_db
-from app.schemas.clip import ClipResponse, ClipStatsResponse
+from app.schemas.clip import ClipCreate, ClipResponse, ClipStatsResponse
 from app.services import clip_service
 
 router = APIRouter(prefix="/play", tags=["play"])
@@ -15,6 +15,12 @@ router = APIRouter(prefix="/play", tags=["play"])
 def get_clips(db: Session = Depends(get_db)):
     """Return all dummy sound clips."""
     return clip_service.get_all_clips(db)
+
+
+@router.post("", response_model=ClipResponse, status_code=status.HTTP_201_CREATED)
+def create_clip(clip_in: ClipCreate, db: Session = Depends(get_db)):
+    """Create a new audio clip entry."""
+    return clip_service.create_clip(db, clip_in)
 
 
 @router.get("/{clip_id}/stream")

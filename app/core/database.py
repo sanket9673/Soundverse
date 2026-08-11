@@ -4,7 +4,19 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
 
-engine = create_engine(settings.DATABASE_URL, pool_pre_ping=True)
+db_url = settings.DATABASE_URL
+if db_url and db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+connect_args = {}
+if settings.ENV == "production":
+    connect_args["sslmode"] = "require"
+
+engine = create_engine(
+    db_url,
+    pool_pre_ping=True,
+    connect_args=connect_args,
+)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -14,7 +26,6 @@ class Base(DeclarativeBase):
 
 
 def get_db() -> Generator[Session, None, None]:
-    """FastAPI dependency that yields a database session and closes it after request completion."""
     db = SessionLocal()
     try:
         yield db

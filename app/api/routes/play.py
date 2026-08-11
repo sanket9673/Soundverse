@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
+from app.core.security import verify_api_key
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 import httpx
@@ -8,8 +9,11 @@ from app.core.database import get_db
 from app.schemas.clip import ClipCreate, ClipResponse, ClipStatsResponse
 from app.services import clip_service
 
-router = APIRouter(prefix="/play", tags=["play"])
-
+router = APIRouter(
+    prefix="/play",
+    tags=["Play"],
+    dependencies=[Depends(verify_api_key)]
+)
 
 @router.get("", response_model=List[ClipResponse])
 def get_clips(db: Session = Depends(get_db)):

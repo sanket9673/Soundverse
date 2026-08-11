@@ -3,7 +3,6 @@ from starlette_exporter import PrometheusMiddleware, handle_metrics
 
 
 def setup_metrics(app: FastAPI) -> None:
-    """Attach Prometheus middleware and expose /metrics endpoint."""
     app.add_middleware(
         PrometheusMiddleware,
         app_name="soundverse_play_service",

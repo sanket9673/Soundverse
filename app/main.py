@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 import logging
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -26,13 +27,19 @@ setup_logging()
 
 app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 
-# Setup Prometheus metrics middleware and /metrics route
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"] if settings.ENV != "production" else ["https://soundverse-play-backend.onrender.com"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
+)
+
 setup_metrics(app)
 
 app.include_router(play_router)
 
 
-# Global Exception Handlers
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     return JSONResponse(

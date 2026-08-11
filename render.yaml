@@ -11,6 +11,8 @@ services:
           property: connectionString
       - key: ENV
         value: production
+      - key: API_KEY
+        value: soundverse-secret-key-2026
 
 databases:
   - name: soundverse-db

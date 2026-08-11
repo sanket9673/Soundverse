@@ -27,12 +27,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Lint and syntax check
-        run: |
-          python -m compileall app scripts tests
+        run: python -m compileall app scripts tests
 
       - name: Run unit tests
         env:
-          ENV: test
-          DATABASE_URL: sqlite:///:memory:
-        run: |
-          pytest
+          ENV: "test"
+          DATABASE_URL: "sqlite:///:memory:"
+        run: pytest

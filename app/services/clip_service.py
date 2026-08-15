@@ -16,8 +16,8 @@ def get_clip_by_id(db: Session, clip_id: int) -> Optional[Clip]:
 
 
 def increment_play_count(db: Session, clip: Clip) -> Clip:
-    """Increment the play_count for a clip and commit to the database."""
-    clip.play_count += 1
+    """Increment the play_count for a clip atomically and commit to the database."""
+    db.query(Clip).filter(Clip.id == clip.id).update({Clip.play_count: Clip.play_count + 1}, synchronize_session="evaluate")
     db.commit()
     db.refresh(clip)
     return clip

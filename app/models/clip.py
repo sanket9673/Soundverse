@@ -15,7 +15,7 @@ class Clip(Base):
     description: Mapped[Optional[str]] = mapped_column(
         String(500), nullable=True
     )
-    genre: Mapped[str] = mapped_column(String(100), nullable=False)
+    genre: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     duration: Mapped[float] = mapped_column(Float, nullable=False)
     audio_url: Mapped[str] = mapped_column(String(1000), nullable=False)
     play_count: Mapped[int] = mapped_column(
